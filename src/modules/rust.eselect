@@ -117,6 +117,10 @@ unset_version() {
 	remove_symlink "${EROOT}/${SITELISP}"/rust-mode
 	remove_symlink "${EROOT}/${SITELISP}"/site-gentoo.d/50rust-mode-gentoo.el
 
+	if [[ -e "${EROOT}/${SITELISP}"/site-gentoo.el ]]; then
+		elisp-site-regen
+	fi
+
 	for i in after/syntax autoload ftdetect ftplugin indent plugin syntax; do
 		remove_symlink "${EROOT}/${SITEVIM}/${i}/rust.vim"
 	done
@@ -245,7 +249,7 @@ describe_unset() {
 	echo "Unset active rust version"
 }
 
-describe_update_options() {
+describe_unset_options() {
 	echo "--if-invalid    : Unset only if symlink is invalid (e.g. package was uninstalled)"
 }
 
