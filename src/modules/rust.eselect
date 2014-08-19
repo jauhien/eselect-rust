@@ -245,8 +245,27 @@ describe_unset() {
 	echo "Unset active rust version"
 }
 
+describe_update_options() {
+	echo "--if-invalid    : Unset only if symlink is invalid (e.g. package was uninstalled)"
+}
+
 do_unset() {
-    [[ $# -gt 0 ]] && die -q "Too many parameters"
+	local if_invalid="0"
+	while [[ $# > 0 ]]; do
+		case "$1" in
+			--if-invalid)
+				if_invalid="1"
+				;;
+			*)
+				die -q "Unrecognized argument '$1'"
+				;;
+		esac
+		shift
+	done
+
+	if [[ "${if_invalid}" == "1" && -e "${EROOT}"/usr/bin/rustc ]]; then
+		return
+	fi
 
 	unset_version || die -q "Couldn't unset active version"
 }
