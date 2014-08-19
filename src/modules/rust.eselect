@@ -19,7 +19,7 @@ find_targets() {
 	for f in "${EROOT}"/usr/bin/rustc-*; do
 		version=""
 		[[ -x ${f} ]] && version=`basename "${f}" | awk -F"-" '{ print $2 }'`
-		has_version "=dev-lang/rust-${version}" && echo ${version}
+		has_version "~dev-lang/rust-${version}" && echo ${version}
 	done
 }
 
