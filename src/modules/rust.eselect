@@ -200,3 +200,35 @@ do_set() {
 
 	set_version "$1" || die -q "Couldn't set new active version"
 }
+
+### update action ###
+
+describe_update() {
+	echo "Switch to the most recent rust compiler"
+}
+
+describe_update_options() {
+	echo "--if-unset    : Do not override existing implementation"
+}
+
+do_update() {
+	local if_unset="0"
+	while [[ $# > 0 ]]; do
+		case "$1" in
+			--if-unset)
+				if_unset="1"
+				;;
+			*)
+				die -q "Unrecognized argument '$1'"
+				;;
+		esac
+		shift
+	done
+
+	if [[ "${if_unset}" == "1" && -f "${EROOT}"/usr/bin/rustc ]]; then
+		return
+	fi
+
+	local targets=( $(find_targets) )
+	do_set ${#targets[@]}
+}
