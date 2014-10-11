@@ -2,7 +2,7 @@
 # Copyright 2014 Gentoo Foundation
 # Distributed under the terms of the GNU GPL version 2 or later
 
-DESCRIPTION="Manage the rust compiler versions"
+DESCRIPTION="Manage the Rust compiler versions"
 MAINTAINER="jauhien@gentoo.org"
 VERSION="0.2"
 
@@ -94,13 +94,13 @@ set_version() {
 ### list action ###
 
 describe_list() {
-	echo "List available rust versions"
+	echo "List available Rust versions"
 }
 
 do_list() {
 	local i targets=( $(find_targets) )
 
-	write_list_start "Available rust versions:"
+	write_list_start "Available Rust versions:"
     for (( i = 0; i < ${#targets[@]}; i++ )); do
         # highlight the target where the symlink is pointing to
         [[ rustc-$(get_postfix ${targets[i]}) = \
@@ -113,7 +113,7 @@ do_list() {
 ### set action ###
 
 describe_set() {
-	echo "Set active rust version"
+	echo "Set active Rust version"
 }
 
 describe_set_parameters() {
@@ -134,7 +134,7 @@ do_set() {
 ### update action ###
 
 describe_update() {
-	echo "Switch to the most recent rust compiler"
+	echo "Switch to the most recent Rust compiler"
 }
 
 describe_update_options() {
@@ -166,7 +166,7 @@ do_update() {
 ### unset action ###
 
 describe_unset() {
-	echo "Unset active rust version"
+	echo "Unset active Rust version"
 }
 
 describe_unset_options() {
