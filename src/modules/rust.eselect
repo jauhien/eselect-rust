@@ -65,6 +65,7 @@ unset_version() {
 	remove_symlink "${EROOT}"/usr/bin/rustc
 	remove_symlink "${EROOT}"/usr/bin/rustdoc
 	remove_symlink "${EROOT}"/usr/bin/rust-lldb
+	remove_symlink "${EROOT}"/usr/bin/rust-gdb
 }
 
 # set the rust version
@@ -90,7 +91,8 @@ set_version() {
 
 	set_symlink "${EROOT}/usr/bin/rustc-${target}" "${EROOT}/usr/bin/rustc" || die -q "rustc symlink setting failed"
 	set_symlink "${EROOT}/usr/bin/rustdoc-${target}" "${EROOT}/usr/bin/rustdoc" || die -q "rustdoc symlink setting failed"
-	set_symlink "${EROOT}/usr/bin/rust-lldb-${target}" "${EROOT}/usr/bin/rust-lldb" || write_warning_msg "rust-lldb symlink setting failed (it can be ok for the older rust)"
+	set_symlink "${EROOT}/usr/bin/rust-lldb-${target}" "${EROOT}/usr/bin/rust-lldb" || write_warning_msg "rust-lldb symlink setting failed (it can be ok for the older or newer rust)"
+	set_symlink "${EROOT}/usr/bin/rust-gdb-${target}" "${EROOT}/usr/bin/rust-gdb" || write_warning_msg "rust-gdb symlink setting failed (it can be ok for the older rust)"
 }
 
 ### list action ###
