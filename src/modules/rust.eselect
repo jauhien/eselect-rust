@@ -40,6 +40,31 @@ get_current_target() {
 	echo "NOT_SET"
 }
 
+#get symlinks list from file or the default value
+get_symlinks_from_file() {
+	local filename=$1
+	local symlinks=()
+	local i
+	if [[ -e ${filename} ]]; then
+		for i in `cat "${filename}"`; do
+			symlinks+=($i)
+		done
+	fi
+
+	if [ ${#symlinks[@]} -eq 0 ]; then
+		echo /usr/bin/rustdoc
+	else
+		echo "${symlinks[@]}"
+	fi
+
+}
+
+#get last set symlinks
+get_last_set_symlinks() {
+	local symlinks=( $(get_symlinks_from_file "${EROOT}/etc/env.d/rust/last-set") )
+	echo "${symlinks[@]}"
+}
+
 #get lists of symlinks
 get_symlinks() {
 	local target=$1
@@ -52,17 +77,8 @@ get_symlinks() {
 		target=${targets[target]}
 	fi
 
-	local symlinks=()
-	local i
-	for i in `cat "${EROOT}/etc/env.d/rust/provider-${target}"`; do
-		symlinks+=($i)
-	done
-
-	if [ ${#symlinks[@]} -eq 0 ]; then
-		echo /usr/bin/rustdoc
-	else
-		echo "${symlinks[@]}"
-	fi
+	local symlinks=( $(get_symlinks_from_file "${EROOT}/etc/env.d/rust/provider-${target}") )
+	echo "${symlinks[@]}"
 }
 
 # remove symlink if exists
@@ -83,6 +99,8 @@ set_symlink() {
 	local source=$1
 	local dest=$2
 
+	remove_symlink "${dest}"
+
 	if [[ -e ${source} ]]; then
 		mkdir -p "$(dirname ${dest})" || die -q "directory creation failed for $(dirname ${dest})"
 		ln -s "${source}" "${dest}" || die -q "${dest} symlink setting failed"
@@ -93,12 +111,13 @@ set_symlink() {
 
 # unset the rust version
 unset_version() {
-	local target=$(get_current_target)
-	local symlinks=( $(get_symlinks ${target}) )
+	local symlinks=( $(get_last_set_symlinks) )
 	for i in "${symlinks[@]}"; do
 		remove_symlink "${EROOT}${i}"
 	done
 	remove_symlink "${EROOT}/usr/bin/rustc"
+	rm -f "${EROOT}/etc/env.d/rust/last-set" \
+		|| die -q "rm -f ${EROOT}/etc/env.d/rust/last-set failed"
 }
 
 # set the rust version
@@ -122,14 +141,16 @@ set_version() {
 
 	unset_version
 
-	set_symlink "${EROOT}/usr/bin/rustc-${target_postfix}" "${EROOT}/usr/bin/rustc" \
-		|| die -q "rustc symlink setting failed"
+	set_symlink "${EROOT}/usr/bin/rustc-${target_postfix}" "${EROOT}/usr/bin/rustc"
 
 	local symlinks=( $(get_symlinks ${target}) )
 	for i in "${symlinks[@]}"; do
-		set_symlink "${EROOT}${i}-${target_postfix}" "${EROOT}${i}" \
-			|| die -q "${i} symlink setting failed"
+		set_symlink "${EROOT}${i}-${target_postfix}" "${EROOT}${i}"
 	done
+
+	cp "${EROOT}/etc/env.d/rust/provider-${target}" \
+	   "${EROOT}/etc/env.d/rust/last-set" || \
+	    die -q "symlink list copying failed"
 }
 
 ### list action ###
