@@ -172,6 +172,26 @@ do_list() {
 	write_numbered_list -m "(none found)" "${targets[@]}"
 }
 
+### show action ###
+
+describe_show() {
+	echo "Show the current Rust implementation"
+}
+
+do_show() {
+	[[ -z "${@}" ]] || die -q "Too many parameters"
+	write_list_start "Current Rust implementation:"
+
+	local targets=( $(find_targets) )
+	local target=$(get_current_target)
+
+	if is_number "${target}"; then
+		write_kv_list_entry "${targets[target]}" ""
+	else
+		write_kv_list_entry "(unset)" ""
+	fi
+}
+
 ### set action ###
 
 describe_set() {
